@@ -1,0 +1,841 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%Title: [% title %]
+
+%%Creator: 
+%%CreationDate: 
+%%BoundingBox:   0  0  [% logowidth * ( 72 / 2.54 ) + 20 %] [% ( logowidth * 72 / 2.54 ) / 1.618 / 2 + pmarkheight %]
+%%Pages: 0
+%%DocumentFonts: 
+%%EndComments
+
+% ---- CONSTANTS ----
+/cmfactor 72 2.54 div def % defines points -> cm conversion
+/cm {cmfactor mul} bind def % defines centimeters
+
+% ---- VARIABLES ----
+
+true setoverprint
+
+% ---- Color Allocation ----
+/black [0 0 0] def
+
+[% colordef %]
+
+% ---- axis ----
+
+/logoWidth [% logowidth %] cm def
+/logoHeight [% logowidth / 1.618 / 2 %] cm [% pmarkheight %] add def
+/CanvasHeight [% logowidth / 1.618 / 2 %] cm [% pmarkheight %] add def
+/logoTitle ([% title %]) def
+/pMarkHeight [% pmarkheight %] def
+
+/yaxis true def
+/yaxisLabel ([% ylabel %]) def
+/yaxisLabelRight ([% ylabelright %]) def
+
+/yaxisBits [% ymax %] def % percentage to bits
+/yaxisTicBits [% IF ticbits %][% ticbits %][% ELSE %][% ymax / 2 %][% END %] def
+/yaxisBitsRight [% ymaxright %] def % percentage to bits
+/yaxisTicBitsRight [% IF ticbitsright %][% ticbitsright %][% ELSE %][% ymaxright / 2 %][% END %] def
+
+/xaxis true def
+/xaxisLabel ([% xlabel %]) def
+/showEnds (p) def % d: DNA, p: PROTEIN, -: none
+
+/showFineprint false def
+/fineprint (weblogo.berkeley.edu) def
+
+/charsPerLine [% charsperline %] def
+/logoLines 1 def
+
+/showingBox (n) def    %n s f
+/shrinking false def
+/shrink  0.5 def
+/outline [% outline %] def
+
+/IbeamFraction  1 def
+/IbeamGray      0.50 def
+/IbeamLineWidth 0.5 def
+
+/fontsize       [% 12 * logowidth / 15 %] def
+/titleFontsize  [% 14 * logowidth / 15 %] def
+/smallFontsize  [% 10 * logowidth / 15 %] def
+
+/defaultColor black def 
+
+% ---- DERIVED PARAMETERS ----
+
+/leftMargin
+  fontsize 3.5 mul
+def 
+
+/bottomMargin
+  fontsize 0.75 mul
+
+  % Add extra room for axis
+  xaxis {fontsize 1.75 mul add } if
+  xaxisLabel () eq {} {fontsize 0.75 mul add} ifelse
+def
+
+/topMargin 
+  logoTitle () eq { pMarkHeight () eq { 10 }{ pMarkHeight 10 add } ifelse }{titleFontsize 4 add} ifelse
+def
+
+/rightMargin 
+  %Add extra room if showing ends
+  % bool  proc1  proc2 ifelse – Execute proc1 if bool is true, proc2 if false
+  showEnds (-) eq { fontsize 1.5 mul }{fontsize 2.5 mul} ifelse
+def
+
+/yaxisHeight
+  logoHeight
+  bottomMargin sub
+  topMargin sub
+def
+
+%/ticWidth fontsize 2 div def
+
+/pointsPerBit yaxisHeight yaxisBits div def
+/pointsPerBitRight yaxisHeight yaxisBitsRight div def
+
+/isBoxed 
+  showingBox (s) eq
+  showingBox (f) eq or { 
+    true
+  } {
+    false
+  } ifelse
+def
+
+/stackMargin [% stack_margin %] def
+
+% Do not add space aroung characters if characters are boxed
+/charRightMargin 
+  isBoxed { 0.0 } {stackMargin} ifelse
+def
+
+/charTopMargin 
+  isBoxed { 0.0 } {stackMargin} ifelse
+def
+
+/charWidth
+  logoWidth
+  leftMargin sub
+  rightMargin sub
+  charsPerLine div
+  charRightMargin sub
+def
+
+/charWidth4 charWidth 4 div def
+/charWidth2 charWidth 2 div def
+
+/stackWidth 
+  charWidth charRightMargin add
+def
+ 
+/numberFontsize
+  fontsize charWidth lt {fontsize}{charWidth} ifelse
+def
+
+/ticWidth numberFontsize 2 div def
+
+% movements to place 5'/N and 3'/C symbols
+/leftEndDeltaX  fontsize neg 2 mul         def
+/leftEndDeltaY  fontsize 2 mul neg   def
+/rightEndDeltaX fontsize 0.25 mul 3 mul    def
+/rightEndDeltaY leftEndDeltaY      def
+
+% Outline width is proporional to charWidth, 
+% but no less that 1 point
+/outlinewidth 
+  charWidth 32 div dup 1 gt  {}{pop 1} ifelse
+def
+
+% write Pmark. point 0.
+% 
+% ---- PROCEDURES ----
+
+/ShowPmark {
+  gsave
+  /Pstr (P) def
+  /Pstrwidth fontsize 2 div def
+  /arcr pMarkHeight 1.618 div 2 div def
+  /arcx logoWidth 2 div arcr add arcr 4 div sub def
+  /arcy CanvasHeight arcr 1.5 mul sub def
+  2 setlinejoin
+  % Write stem %
+  newpath
+  3 setlinewidth
+  arcx arcr 4 1.5 mul div sub arcy moveto
+  arcx arcr 4 1.5 mul div add arcy lineto
+  arcx arcr 4 1.5 mul div add arcy pMarkHeight arcr sub sub lineto
+  arcx arcr 4 1.5 mul div sub arcy pMarkHeight arcr sub sub lineto
+  arcx arcr 4 1.5 mul div sub arcy lineto
+  closepath
+  0 setgray
+  fill
+  stroke
+  newpath
+  arcx arcy arcr 0 360 arc
+  closepath
+  gsave
+  0.952941176470588 0.941176470588235 0 setrgbcolor
+  fill
+  grestore
+  gsave
+  0.952941176470588 0.941176470588235 0 setrgbcolor
+  1 setlinewidth
+  stroke
+  grestore
+
+  SetSmallFont
+  Pstrwidth 2 div neg arcx add
+  Pstrwidth 1.6 div neg arcy add
+  moveto
+   % /[% IF logofont %][% logofont %][% ELSE %]Helvetica-Bold[% END %] findfont smallFontsize scalefont setfont
+   Pstr show
+  grestore
+} bind def
+
+/ShowCropArea {
+    /margin 2.5 def
+    gsave
+    newpath
+    0 margin add
+    0 margin add  moveto
+    0 margin add
+    logoHeight margin sub lineto
+    logoWidth margin sub
+    logoHeight margin sub lineto
+    logoWidth margin sub
+    0 margin add lineto
+    closepath
+    0 setgray
+    1 setlinewidth
+    stroke
+    grestore
+} bind def
+
+/ShowGraph {
+    gsave
+      logoWidth leftMargin sub rightMargin sub neg 0 translate
+      gsave
+      newpath
+      [% bezier.starts.x3 %] [% bezier.starts.y3 %] pointsPerBit mul moveto
+
+      [% FOREACH i= bezier.points %]
+	 [% i.x3 %] [% i.y3 %] pointsPerBit mul
+	 lineto
+      [% END %]
+
+      0.952941176470588 0.941176470588235 0 setrgbcolor
+      4 setlinewidth
+      [4 3] 0 setdash
+      stroke
+      grestore
+
+      [% IF graphpoint %]
+      gsave
+      0 0 1 setrgbcolor
+      [% bezier.starts.x3 %] [% bezier.starts.y3 %] pointsPerBit mul
+      4 0 360 arc
+      fill
+      % 0 setgray
+      stroke
+      [% FOREACH i = bezier.points %]
+         gsave
+	 % 0.952941176470588 0.6 0.172549019607843 setrgbcolor
+	 % 0 setgray
+	 0 0 1 setrgbcolor
+	 [% i.x3 %] [% i.y3 %] pointsPerBit mul
+	 4 0 360 arc
+	 fill
+	 0 setgray
+	 stroke
+	 grestore
+       [% END %]
+      grestore
+      [% END %]
+
+     grestore
+} bind def
+
+/StartLogo { 
+  % Save state
+  save 
+  gsave 
+
+  % Print Logo Title, top center 
+  gsave 
+    SetTitleFont
+
+    logoWidth 2 div
+    logoTitle
+    stringwidth pop 2 div sub
+    logoHeight logoLines mul  
+    titleFontsize sub
+    moveto
+
+    logoTitle
+    show
+  grestore
+  [% IF croparea %] ShowCropArea [% END %]
+  ShowPmark
+  
+  % Print X-axis label, bottom center
+  gsave
+    SetStringFont
+
+    logoWidth 2 div
+    xaxisLabel stringwidth pop 2 div sub
+    fontsize 3 div
+    moveto
+
+    xaxisLabel
+    show
+  grestore
+
+  % Show Fine Print
+  showFineprint {
+    gsave
+      SetSmallFont
+      logoWidth
+        fineprint stringwidth pop sub
+        smallFontsize sub
+          smallFontsize 3 div
+      moveto
+    
+      fineprint show
+    grestore
+  } if
+
+  % Move to lower left corner of last line, first stack
+  leftMargin bottomMargin translate
+
+  % Move above first line ready for StartLine 
+  0 logoLines logoHeight mul translate
+
+  SetLogoFont
+} bind def
+
+/EndLogo { 
+  grestore 
+  showpage 
+  restore 
+} bind def
+
+
+/StartLine{ 
+  % move down to the bottom of the line:
+  0 logoHeight neg translate
+  
+  gsave 
+    yaxis { MakeYaxis } if
+    xaxis { ShowLeftEnd } if
+} bind def
+
+/EndLine{ 
+    xaxis { ShowRightEnd } if
+  grestore 
+} bind def
+
+
+/MakeYaxis {
+  gsave    
+    stackMargin neg 0 translate
+    ShowYaxisBar
+    ShowYaxisLabel
+    % xaxisLabel () eq {} {fontsize 0.75 mul add} ifelse
+  grestore
+} bind def
+
+
+/ShowYaxisBar { 
+  gsave  
+  %SetStringFont
+  SetNumberFont
+    /str 10 string def % string to hold number  
+    /smallgap stackMargin 2 div def
+
+    % Draw first tic and bar
+    gsave
+      ticWidth neg 0 moveto
+      ticWidth 0 rlineto
+      0 yaxisHeight rlineto
+      stroke
+    grestore
+
+
+    % Draw the tics
+    % initial increment limit proc for
+    0 yaxisTicBits yaxisBits abs      %cvi
+    {/loopnumber exch def
+
+      % convert the number coming from the loop to a string
+      % and find its width
+
+      loopnumber 10 str cvrs
+      /stringnumber exch def % string representing the number
+
+      stringnumber stringwidth pop
+      /numberwidth exch def % width of number to show
+
+      /halfnumberheight
+         stringnumber CharBoxHeight 2 div
+      def
+
+      numberwidth                     % move back width of number
+      neg loopnumber pointsPerBit mul % shift on y axis
+      halfnumberheight sub            % down half the digit
+
+      moveto                          % move back the width of the string
+
+      ticWidth neg smallgap sub       % Move back a bit more  
+      0 rmoveto                       % move back the width of the tic  
+
+      stringnumber show
+      smallgap 0 rmoveto              % Make a small gap  
+
+      % now show the tic mark
+      0 halfnumberheight rmoveto      % shift up again
+      ticWidth 0 rlineto
+      stroke
+    } for
+
+grestore
+} bind def
+
+/ShowYaxisLabel {
+  gsave
+    SetStringFont
+
+    % How far we move left depends on the size of
+    % the tic labels.
+     /str 10 string def % string to hold number
+     yaxisBits yaxisTicBits div cvi yaxisTicBits mul 
+     str cvs stringwidth pop
+     ticWidth 1.5 mul add neg  
+
+    yaxisHeight
+    yaxisLabel stringwidth pop
+    sub 2 div
+
+    translate
+    90 rotate
+    0 0 moveto
+    yaxisLabel show
+  grestore
+} bind def
+
+/ShowYaxisLabelRight {
+  gsave
+    SetStringFont
+
+    % How far we move left depends on the size of
+    % the tic labels.
+     /str 10 string def % string to hold number
+
+     yaxisBits yaxisTicBits div cvi yaxisTicBits mul 
+     str cvs stringwidth pop
+     ticWidth 1.5 mul add   
+
+    yaxisHeight
+    yaxisLabelRight stringwidth pop
+    add 2 div
+
+    translate
+    -90 rotate
+    0 0 moveto
+% yaxisLabelRight stringwidth pop neg yaxisLabelRight stringwidth pop moveto
+    yaxisLabelRight show
+  grestore
+} bind def
+
+/StartStack {  % <stackNumber> startstack
+  xaxis {MakeNumber}{pop} ifelse
+  gsave
+} bind def
+
+/EndStack {
+  grestore
+  stackWidth 0 translate
+} bind def
+
+
+% Draw a character whose height is proportional to symbol bits
+/MakeSymbol{  % charbits character (rgbcolor) MakeSymbol
+  gsave
+    /char exch def
+    /bits exch def
+
+    /bitsHeight 
+%   bits pointsPerBit mul [% ymax %] mul
+    bits pointsPerBit mul
+    def
+    /charHeight
+       bitsHeight charTopMargin sub
+       dup
+       0.0 gt {}{pop 0.0} ifelse % if neg replace with zero 
+    def 
+ 
+    charHeight 0.0 gt {
+       char SetColor
+ % ->      0.7000   0.7000 1 setrgbcolor <-
+      
+      charWidth charHeight char ShowChar
+
+      showingBox (s) eq { % Unfilled box
+        0 0 charWidth charHeight false ShowBox
+      } if
+
+      showingBox (f) eq { % Filled box
+        0 0 charWidth charHeight true ShowBox
+      } if
+
+    } if
+
+  grestore
+
+  0 bitsHeight translate 
+} bind def
+
+
+/ShowChar { % <width> <height> <char> ShowChar
+  gsave
+    /tc exch def    % The character
+    /ysize exch def % the y size of the character
+    /xsize exch def % the x size of the character
+
+    /xmulfactor 1 def 
+    /ymulfactor 1 def
+
+    % if ysize is negative, make everything upside down!
+    ysize 0 lt {
+      % put ysize normal in this orientation
+      /ysize ysize abs def
+      xsize ysize translate
+      180 rotate
+    } if
+
+    shrinking {
+      xsize 1 shrink sub 2 div mul
+        ysize 1 shrink sub 2 div mul translate 
+
+      shrink shrink scale
+    } if
+
+    % Calculate the font scaling factors
+    % Loop twice to catch small correction due to first scaling
+    2 {
+      gsave
+        xmulfactor ymulfactor scale
+      
+        ysize % desired size of character in points
+        tc CharBoxHeight 
+        dup 0.0 ne {
+          div % factor by which to scale up the character
+          /ymulfactor exch def
+        } % end if
+        {pop pop}
+        ifelse
+
+        xsize % desired size of character in points
+        tc CharBoxWidth
+        dup 0.0 ne {
+          div % factor by which to scale up the character
+          /xmulfactor exch def
+        } % end if
+        {pop pop}
+        ifelse
+      grestore
+    } repeat
+
+    % Adjust horizontal position if the symbol is an I
+    tc (I) eq {
+      charWidth 2 div % half of requested character width
+      tc CharBoxWidth 2 div % half of the actual character
+      sub 0 translate
+      % Avoid x scaling for I 
+      /xmulfactor 1 def 
+    } if
+
+
+    % ---- Finally, draw the character
+  
+    newpath
+    xmulfactor ymulfactor scale
+
+    % Move lower left corner of character to start point
+    tc CharBox pop pop % llx lly : Lower left corner
+    exch neg exch neg
+    moveto
+
+    outline {  % outline characters:
+      outlinewidth setlinewidth
+      tc true charpath
+      gsave 1 setgray fill grestore
+      clip stroke
+    } { % regular characters
+      tc show
+    } ifelse
+
+  grestore
+} bind def
+
+
+/ShowBox { % x1 y1 x2 y2 filled ShowBox
+  gsave
+    /filled exch def 
+    /y2 exch def
+    /x2 exch def
+    /y1 exch def
+    /x1 exch def
+    newpath
+    x1 y1 moveto
+    x2 y1 lineto
+    x2 y2 lineto
+    x1 y2 lineto
+    closepath
+
+    clip
+    
+    filled {
+      fill
+    }{ 
+      0 setgray stroke   
+    } ifelse
+
+  grestore
+} bind def
+
+% number MakeNumber
+/MakeNumber { 
+  gsave
+    SetNumberFont
+    stackWidth 1.25 sub 0 translate
+%     stackWidth logoHeight (0) CharBoxHeight sub topMargin 1.5 mul sub translate
+     90 rotate            % rotate so the number fits
+    dup stringwidth sub          % find the length of the number
+%    dup stringwidth pop 1.5 mul  % find the length of the number
+    neg                          % prepare for move
+    stackMargin sub              % Move back a bit
+    charWidth (0) CharBoxHeight  % height of numbers
+    sub 2 div                    %
+    moveto                       % move back to provide space
+    show
+  grestore
+} bind def
+
+
+/Ibeam{ % heightInBits Ibeam
+  gsave
+    % Make an Ibeam of twice the given height in bits
+    /height exch  pointsPerBit mul def 
+    /heightDRAW height IbeamFraction mul def
+
+    IbeamLineWidth setlinewidth
+    IbeamGray setgray 
+
+    charWidth2 height neg translate
+    ShowIbar
+    newpath
+      0 0 moveto
+      0 heightDRAW rlineto
+    stroke
+    newpath
+      0 height moveto
+      0 height rmoveto
+      currentpoint translate
+    ShowIbar
+    newpath
+    0 0 moveto
+    0 heightDRAW neg rlineto
+    currentpoint translate
+    stroke
+  grestore
+} bind def
+
+
+/ShowIbar { % make a horizontal bar
+  gsave
+    newpath
+      charWidth4 neg 0 moveto
+      charWidth4 0 lineto
+    stroke
+  grestore
+} bind def
+
+
+/ShowLeftEnd {
+  gsave
+%    SetStringFont
+    SetEndFont
+    leftEndDeltaX leftEndDeltaY moveto
+    showEnds (d) eq {(5) show ShowPrime} if
+    showEnds (p) eq {(N) show} if
+  grestore
+} bind def
+
+/ShowYaxisBarRight { 
+  gsave  
+  SetNumberFont
+    /str 10 string def             % string to hold number
+    /smallgap stackMargin 2 div def
+
+    % Draw first tic and bar
+    gsave
+      stackWidth neg 0 moveto
+      stackWidth 0 rmoveto
+      0 yaxisHeight rlineto
+      stroke
+    grestore
+
+    % Draw the tics
+    % initial increment limit proc for
+    0 yaxisTicBitsRight yaxisBitsRight abs      %cvi
+    {/loopnumber exch def
+
+      % convert the number coming from the loop to a string
+      % and find its width
+
+      loopnumber 10 str cvrs
+      /stringnumber exch def % string representing the number
+
+      stringnumber stringwidth pop
+      /numberwidth exch def % width of number to show
+
+      /halfnumberheight
+         stringnumber CharBoxHeight 2 div
+      def
+
+      numberwidth                     % move back width of number
+      neg loopnumber pointsPerBitRight mul % shift on y axis
+      halfnumberheight sub            % down half the digit
+
+      moveto                          % move back the width of the string
+
+      ticWidth neg smallgap sub           % Move back a bit more  
+      0 rmoveto                       % move back the width of the tic
+
+      ticWidth 2 mul smallgap 2 mul add numberwidth add 0 rmoveto
+      
+      stringnumber show
+      smallgap 2 mul neg  0 rmoveto              % Make a small gap  
+
+      % now show the tic mark
+      numberwidth ticWidth add neg halfnumberheight rmoveto      % shift up again
+      ticWidth 0 rlineto
+      stroke
+    } for
+
+grestore
+    gsave
+    ShowYaxisLabelRight
+    grestore
+} bind def
+
+/MakeYaxisRight {
+    ShowYaxisBarRight
+} bind def
+
+/ShowRightEnd { 
+  gsave
+%    SetStringFont
+    SetEndFont
+    rightEndDeltaX rightEndDeltaY moveto
+    showEnds (d) eq {(3) show ShowPrime} if
+    showEnds (p) eq {(C) show} if
+  grestore
+  MakeYaxisRight
+} bind def
+
+
+/ShowPrime {
+  gsave
+    SetPrimeFont
+    (\242) show 
+  grestore
+} bind def
+
+
+% <char> SetColor
+/SetColor{
+  dup colorDict exch known {
+    colorDict exch get aload pop setrgbcolor
+  } {
+    pop
+    defaultColor aload pop setrgbcolor
+  } ifelse 
+} bind def
+
+% define fonts
+/SetTitleFont {/[% IF titlefont %][% titlefont %][% ELSE %]Times-Bold[% END %] findfont titleFontsize scalefont setfont} bind def
+/SetLogoFont  {/[% IF logofont %][% logofont %][% ELSE %]Helvetica-Bold[% END %] findfont charWidth  scalefont setfont} bind def
+/SetStringFont{/[% IF stringfont %][% stringfont %][% ELSE %]Helvetica-Bold[% END %] findfont fontsize scalefont setfont} bind def
+/SetEndFont{/[% IF endfont %][% endfont %][% ELSE %]Helvetica-Bold[% END %] findfont [% 16 * logowidth / 15 %] scalefont setfont} bind def
+/SetPrimeFont {/Symbol findfont fontsize scalefont setfont} bind def
+/SetSmallFont {/Helvetica findfont smallFontsize scalefont setfont} bind def
+
+/SetNumberFont {
+    /[% numberfont %] findfont 
+    numberFontsize
+    scalefont
+    setfont
+} bind def
+
+%Take a single character and return the bounding box
+/CharBox { % <char> CharBox <lx> <ly> <ux> <uy>
+  gsave
+    newpath
+    0 0 moveto
+    % take the character off the stack and use it here:
+    true charpath 
+    flattenpath 
+    pathbbox % compute bounding box of 1 pt. char => lx ly ux uy
+    % the path is here, but toss it away ...
+  grestore
+} bind def
+
+
+% The height of a characters bounding box
+/CharBoxHeight { % <char> CharBoxHeight <num>
+  CharBox
+  exch pop sub neg exch pop
+} bind def
+
+
+% The width of a characters bounding box
+/CharBoxWidth { % <char> CharBoxHeight <num>
+  CharBox
+  pop exch pop sub neg 
+} bind def
+
+
+% Deprecated names
+/startstack {StartStack} bind  def
+/endstack {EndStack}     bind def
+/makenumber {MakeNumber} bind def
+/numchar { MakeSymbol }  bind def
+
+%%EndProlog
+
+%%Page: 1 1
+StartLogo
+StartLine % line number 1
+
+[% FOREACH variable = atcoord %]
+ ( [% variable.coordinate %] ) startstack
+ gsave
+ [% FOREACH i = variable.data %]
+ [% i.num %]([% i.char %]) numchar
+ [% END %]
+ grestore
+ gsave
+ grestore
+ endstack
+[% END %]
+ShowGraph
+EndLine
+EndLogo
+
+%%EOF

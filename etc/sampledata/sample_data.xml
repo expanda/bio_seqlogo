@@ -1,0 +1,174 @@
+<class>
+<loc pos='-6'>
+<entropy>0.975488750216348</entropy>
+<symbol type='A'>0.0975488750216348</symbol>
+<symbol type='D'>0.0975488750216348</symbol>
+<symbol type='E'>0.0975488750216348</symbol>
+<symbol type='G'>0.0975488750216348</symbol>
+<symbol type='L'>0.0487744375108174</symbol>
+<symbol type='M'>0.0487744375108174</symbol>
+<symbol type='N'>0.0487744375108174</symbol>
+<symbol type='P'>0.146323312532452</symbol>
+<symbol type='R'>0.146323312532452</symbol>
+<symbol type='S'>0.0487744375108174</symbol>
+<symbol type='T'>0.0975488750216348</symbol>
+</loc>
+<loc pos='-5'>
+<entropy>0.675488750216347</entropy>
+<symbol type='A'>0.0337744375108174</symbol>
+<symbol type='D'>0.0675488750216347</symbol>
+<symbol type='E'>0.0337744375108174</symbol>
+<symbol type='F'>0.0337744375108174</symbol>
+<symbol type='H'>0.0337744375108174</symbol>
+<symbol type='K'>0.0337744375108174</symbol>
+<symbol type='L'>0.101323312532452</symbol>
+<symbol type='M'>0.0337744375108174</symbol>
+<symbol type='N'>0.0337744375108174</symbol>
+<symbol type='P'>0.0675488750216347</symbol>
+<symbol type='R'>0.101323312532452</symbol>
+<symbol type='S'>0.0337744375108174</symbol>
+<symbol type='W'>0.0337744375108174</symbol>
+<symbol type='Y'>0.0337744375108174</symbol>
+</loc>
+<loc pos='-4'>
+<entropy>0.737744375108174</entropy>
+<symbol type='D'>0.0368872187554087</symbol>
+<symbol type='E'>0.0368872187554087</symbol>
+<symbol type='F'>0.0737744375108174</symbol>
+<symbol type='G'>0.0368872187554087</symbol>
+<symbol type='K'>0.0737744375108174</symbol>
+<symbol type='L'>0.0737744375108174</symbol>
+<symbol type='N'>0.0368872187554087</symbol>
+<symbol type='P'>0.110661656266226</symbol>
+<symbol type='Q'>0.0368872187554087</symbol>
+<symbol type='R'>0.0737744375108174</symbol>
+<symbol type='S'>0.0368872187554087</symbol>
+<symbol type='T'>0.0368872187554087</symbol>
+<symbol type='V'>0.0737744375108174</symbol>
+</loc>
+<loc pos='-3'>
+<entropy>0.8</entropy>
+<symbol type='A'>0.04</symbol>
+<symbol type='D'>0.04</symbol>
+<symbol type='E'>0.04</symbol>
+<symbol type='G'>0.16</symbol>
+<symbol type='K'>0.04</symbol>
+<symbol type='L'>0.08</symbol>
+<symbol type='N'>0.08</symbol>
+<symbol type='P'>0.04</symbol>
+<symbol type='Q'>0.04</symbol>
+<symbol type='R'>0.08</symbol>
+<symbol type='S'>0.08</symbol>
+<symbol type='T'>0.04</symbol>
+<symbol type='V'>0.04</symbol>
+</loc>
+<loc pos='-2'>
+<entropy>1.35597077393819</entropy>
+<symbol type='D'>0.135597077393819</symbol>
+<symbol type='E'>0.203395616090728</symbol>
+<symbol type='G'>0.0677985386969094</symbol>
+<symbol type='I'>0.135597077393819</symbol>
+<symbol type='L'>0.135597077393819</symbol>
+<symbol type='P'>0.203395616090728</symbol>
+<symbol type='Q'>0.0677985386969094</symbol>
+<symbol type='R'>0.0677985386969094</symbol>
+<symbol type='S'>0.338992693484547</symbol>
+</loc>
+<loc pos='-1'>
+<entropy>1.07548875021635</entropy>
+<symbol type='D'>0.161323312532452</symbol>
+<symbol type='E'>0.161323312532452</symbol>
+<symbol type='G'>0.0537744375108174</symbol>
+<symbol type='I'>0.0537744375108174</symbol>
+<symbol type='K'>0.0537744375108174</symbol>
+<symbol type='N'>0.0537744375108174</symbol>
+<symbol type='P'>0.0537744375108174</symbol>
+<symbol type='Q'>0.107548875021635</symbol>
+<symbol type='R'>0.107548875021635</symbol>
+<symbol type='S'>0.21509775004327</symbol>
+<symbol type='V'>0.0537744375108174</symbol>
+</loc>
+<loc pos='0'>
+<entropy>3.43774437510817</entropy>
+<symbol type='S'>2.75019550008654</symbol>
+<symbol type='T'>0.515661656266226</symbol>
+<symbol type='Y'>0.171887218755409</symbol>
+</loc>
+<loc pos='1'>
+<entropy>1.38048202372184</entropy>
+<symbol type='D'>0.138048202372184</symbol>
+<symbol type='E'>0.276096404744368</symbol>
+<symbol type='G'>0.138048202372184</symbol>
+<symbol type='L'>0.0690241011860921</symbol>
+<symbol type='N'>0.0690241011860921</symbol>
+<symbol type='P'>0.34512050593046</symbol>
+<symbol type='R'>0.138048202372184</symbol>
+<symbol type='S'>0.138048202372184</symbol>
+<symbol type='V'>0.0690241011860921</symbol>
+</loc>
+<loc pos='2'>
+<entropy>1.61323312532452</entropy>
+<symbol type='D'>0.322646625064904</symbol>
+<symbol type='E'>0.241984968798678</symbol>
+<symbol type='G'>0.080661656266226</symbol>
+<symbol type='N'>0.161323312532452</symbol>
+<symbol type='P'>0.241984968798678</symbol>
+<symbol type='S'>0.241984968798678</symbol>
+<symbol type='V'>0.322646625064904</symbol>
+</loc>
+<loc pos='3'>
+<entropy>0.771992554648163</entropy>
+<symbol type='A'>0.0406311870867454</symbol>
+<symbol type='D'>0.0406311870867454</symbol>
+<symbol type='E'>0.121893561260236</symbol>
+<symbol type='F'>0.0812623741734909</symbol>
+<symbol type='G'>0.0812623741734909</symbol>
+<symbol type='H'>0.0406311870867454</symbol>
+<symbol type='I'>0.0406311870867454</symbol>
+<symbol type='L'>0.0406311870867454</symbol>
+<symbol type='P'>0.0812623741734909</symbol>
+<symbol type='R'>0.0812623741734909</symbol>
+<symbol type='S'>0.121893561260236</symbol>
+</loc>
+<loc pos='4'>
+<entropy>0.982518870437637</entropy>
+<symbol type='A'>0.0517115194967177</symbol>
+<symbol type='G'>0.103423038993435</symbol>
+<symbol type='I'>0.0517115194967177</symbol>
+<symbol type='L'>0.103423038993435</symbol>
+<symbol type='N'>0.0517115194967177</symbol>
+<symbol type='P'>0.0517115194967177</symbol>
+<symbol type='Q'>0.0517115194967177</symbol>
+<symbol type='R'>0.103423038993435</symbol>
+<symbol type='S'>0.310269116980306</symbol>
+<symbol type='V'>0.0517115194967177</symbol>
+<symbol type='W'>0.0517115194967177</symbol>
+</loc>
+<loc pos='5'>
+<entropy>0.982518870437637</entropy>
+<symbol type='D'>0.206846077986871</symbol>
+<symbol type='E'>0.155134558490153</symbol>
+<symbol type='G'>0.0517115194967177</symbol>
+<symbol type='I'>0.0517115194967177</symbol>
+<symbol type='K'>0.0517115194967177</symbol>
+<symbol type='L'>0.155134558490153</symbol>
+<symbol type='N'>0.0517115194967177</symbol>
+<symbol type='P'>0.0517115194967177</symbol>
+<symbol type='R'>0.103423038993435</symbol>
+<symbol type='S'>0.103423038993435</symbol>
+</loc>
+<loc pos='6'>
+<entropy>0.8772557125429</entropy>
+<symbol type='D'>0.0461713532917316</symbol>
+<symbol type='E'>0.0461713532917316</symbol>
+<symbol type='G'>0.184685413166926</symbol>
+<symbol type='L'>0.0461713532917316</symbol>
+<symbol type='M'>0.0461713532917316</symbol>
+<symbol type='N'>0.0461713532917316</symbol>
+<symbol type='P'>0.0461713532917316</symbol>
+<symbol type='Q'>0.0923427065834632</symbol>
+<symbol type='S'>0.0461713532917316</symbol>
+<symbol type='T'>0.138514059875195</symbol>
+<symbol type='V'>0.138514059875195</symbol>
+</loc>
+</class>

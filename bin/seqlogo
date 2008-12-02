@@ -1,0 +1,125 @@
+#!/usr/bin/perl 
+
+use strict;
+use warnings;
+use Bio::SeqLogo;
+use File::Find;
+use Getopt::Long;
+use Pod::Usage;
+
+my $opt = {
+    "input"    => $ARGV[0],
+    "output"   => 'logo.eps',
+    "template" => 'default',
+    "template_dir" => '../tmpl/',
+    "maxsize"  => 'auto',
+    "maxscore" => 'auto',
+    "color"    => 'default',
+    "graph"    => 'none',       #'line:dasshed:2px',
+    "frequency" => 0 ,    
+    "debug"    => 0,
+    "help"     => 0,
+    "config"  => '',
+};
+
+GetOptions(
+    "output=s"   => \$opt->{output},
+    "template=s" => \$opt->{template},
+    "maxsize=i"  => \$opt->{maxsize},
+    "maxscore=i" => \$opt->{maxscore},
+    "color=s"    => \$opt->{color},
+    "graph=s"    => \$opt->{graph},
+    "debug"      => \$opt->{debug},
+    "help"       => \$opt->{help},
+    "config=s"  => \$opt->{config},
+    "frequency"  => \$opt->{frequency},
+);
+
+pod2usage(-verbose => 1) unless ( $opt->{input} );
+pod2usage(-verbose => 1) if ( $opt->{help} );
+
+my $seqlogo = Bio::SeqLogo->new( debug => $opt->{debug} );
+
+if ( -d $opt->{input} ) {
+    my @dir = ($opt->{input});
+    find( sub {
+            print $_."\n" if m/.+\.(xml|symvec)$/xsi;
+            $opt->{input} = $_;
+            $seqlogo->createlogo(%$opt) if m/.+\.(xml|symvec)$/xsi;
+        }, @dir);
+}
+elsif ( -f $opt->{input} ) {
+    $seqlogo->createlogo(%$opt);
+}
+
+__END__
+
+=head1 NAME
+
+    seqlogo  - Sequence Logo Generating script.
+
+=head1 SYNOPSIS
+
+% seqlogo [INPUT] [Options ...]
+
+=head1 ARGUMENTS
+
+=over 4
+
+=item --output String
+
+Output file name. (optional)
+
+=item --color FilePath
+
+Color definition file path. (optional)
+
+=item --graph String
+
+'solid' or 'curve' or 'none' (default is 'none')
+
+=item --frequency Boolean
+
+=item --config FilePath
+
+Your configuration file path. Configration File format is L<YAML>
+
+=item --template FilePath
+
+Custome template file path.
+
+=item --maxsize Integer
+
+=item --maxscore Integer
+
+=item --debug 
+
+Debug option.
+
+=item --help
+
+Print this help and exit.
+
+=back
+
+=head1 EXAMPLES
+
+    seqlogo foovar.xml
+
+    seqlogo fooavar.xml -o logo.eps --color
+
+    seqlogo ./data.symvec --output=foovar
+
+    seqlogo ./dataset/ --output=foovar
+
+=head1 AUTHOR
+
+Hiroyuki Nakamura <hryk@cpan.org>
+
+=head1 COPYRIGHT
+
+Copyright (c) 2008, Hiroyuki Nakamura. Some Rights Reserved.
+This module is free software. It may be used, redistributed
+and/or modified under the same terms as Perl itself.
+
+=cut

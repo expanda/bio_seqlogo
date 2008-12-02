@@ -1,0 +1,82 @@
+ - writing test script.
+ - Bio::SeqLogo::Symvec (symvec file support)
+ - Pod coverage 100%
+
+__Sequence Logo Definition__
+
+Sequence Logo:
+バインディングサイトのアラインされた可視化表現。
+一つのロゴは文字の高さによってそれぞれのポジションでの塩基の出現頻度を表しており、
+加えてトータルの文字の高さは情報のbitsで測定された保存度を表している。
+
+ Sequence conservation (conservation):
+ Surprisingly, the degree of biological sequence conservation is neatly given in bits
+ of information. One can envision that eventually all forms of biological conservation
+ could be measured this way.
+
+微妙な頻度はコンセンサス配列となり得るために失われることはない？
+垂直方向のスケールは最大2bitsが考えられる。
+
+
+
+__SymVec__
+
+定義:
+ - コメントアウトは'*'
+ - The next line contains one number (k) that defines the number of letters in the alphabet.
+   ( 4だったらDNA/RNA, 20?だったらProtein )
+ - ポジションを定義するラインは4つの数字を含む。左から
+   ポジション(int), 
+   ポジションにおけるシーケンスの数(int),
+   そのポジションの情報量(real), <- bits
+   情報量の分散？？(real) <- エラーバー
+
+ * エラーバーの値が負の場合、表示されない
+ * シンボルの数が負の場合、180度反転した状態で表示される。
+
+   symvec:  A "symbol vector" file usually created by the alpro or dalvec
+     program.  Makelogo will ignore any number of header lines that begin
+     with "*".  The next line contains one number (k) that defines the number
+     of letters in the alphabet.  and then defines the composition of letters
+     at each position in the set of aligned sequences.
+
+     Each composition begins with 4 numbers on one line:
+
+     1. position (integer);
+     2. number of sequences at that position (integer);
+     3. information content of the position (real);
+     4. variance of the information content (real).
+
+     This is followed by k lines.  The first character on the line
+     is the character.  This is followed by the number of that character
+     at that position.  
+
+     Example:
+
+* position, number of sequences, information Rs, variance of Rs
+4 number of symbols in DNA or RNA
+-100       86 -0.00820  6.3319e-04
+a   27
+c   18
+g   20
+t   21
+ -99       86 -0.00436  6.3319e-04
+a   26
+c   19
+g   17
+t   24
+
+     * If the symvec file is empty, the alphabet is printed as a test.
+
+     * If the error bars values are negative, they are not displayed.  This
+     allows the sites program to control the display when it would not be
+     appropriate.
+
+     * If the number of a symbol is negative in symvec, then the symbol will
+     be rotated 180 degrees before being printed.  The absolute value is used
+     by makelogo to determine the height.  This allows statistical tests
+     which find rare symbols to be significant to show that the symbol is
+     rare by having it up side down.  Notice that ACGT are all easy to
+     distinguish from their upside down versions, but unfortunately this is
+     not always true for protein sequences.  Program dalvec contains a switch
+     for turning the letters over in the ChiLogo.

@@ -1,0 +1,20 @@
+logo2.pl
+
+Usage :
+
+      perldoc logo2.pl
+
+logo2.plはLogo::XMLの形式のみ受け付けます。(symvecに対応するのも考えてはいます)
+logo2.plはcolorの変更を行うことができます。etc/sample_color.txtを参照してください。
+logo2.plはYAML形式の設定を受け付けます。etc/logo_tmpl_config.yamlを参照してください。
+設定項目に関してはperldoc lib/Logo/Templateを参照してください。
+何もオプションを与えない場合、全てデフォルトの値を使って出力が行われます。
+テンプレートファイル、カラーファイルは必要ありません。(もちろん、ファイルを使うこともできます。)
+
+
+Dependent Modules
+
+ * Pod::Usage
+ * YAML::Syck
+ * Template
+ * Logo::XML::Handlers
