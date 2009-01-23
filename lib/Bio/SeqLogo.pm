@@ -87,7 +87,6 @@ sub createlogo {
     }
 
     # Color 
-
     $this->activate('color');
     my $color = $this->klass('color')->new($this->opt("color"));
     $logo_tmpl->color_allocation($color);

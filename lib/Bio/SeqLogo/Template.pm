@@ -112,6 +112,7 @@ sub new {
         'color_obj' => '',
         'color' => '',
         'display_max' => 100,
+		  'maxscore' => 'auto',
         '_graph_heights_data' => [],
         '_graph_heights' => {},
         'vars' => {
@@ -189,7 +190,7 @@ sub process {
     my $args = {
         source  => '',
         maxsize => 100,
-        maxscore => 100,
+        maxscore => 'auto',
         graph => 'curve',
         frequency => 0,
         @_,
@@ -204,7 +205,9 @@ sub process {
         $this->tmplvars_graphtype($args->{graph});
     }
 
+	 $this->message('info',"MAXSCORE ".$args->{maxscore});
     $this->{_frequency} = $args->{frequency};
+	 $this->{maxscore} = $args->{maxscore};
 
     if ( defined($args->{source}) &&
         ( ref ( my $c =  $args->{source} ) =~ m/Bio::SeqLogo::XML::Class|Bio::SeqLogo::Symvec::Accessor/ ) ) {
@@ -229,12 +232,13 @@ sub process_logo {
     my $args = {
         source  => '',
         maxsize => 100,
-        maxscore => 100,
+        maxscore => 'auto',
         @_,
     };
     my $class = $args->{source};
     my ( @at_coord , @bezier_heights );
     my $maxsize = 0;
+
 
     for my $pos ( $class->iterate_position ) {
         my $sum;
@@ -306,12 +310,18 @@ sub size_adjustment {
     }
 
     $this->message('info', "ymax is $maxent");
-    $this->tmplvars_ymax( $this->{display_max} );
+    $this->tmplvars_ymax( $this->{display_max} ) if $this->{maxscore} eq 'auto';
+    $this->tmplvars_ymax( $this->{display_max} * ($this->{maxscore} / $maxent ) ) if $this->{maxscore} ne 'auto';
 
 #    if ( $this->tmplvars_graphtype() eq "none" ) {
     unless ($this->{_frequency}) {
         $this->message('debug', 'Frequency Mode.');
-        $this->tmplvars_ymaxleft( sprintf('%1.2f', $maxent) );
+		  if ($this->{maxscore} eq 'auto') {
+			  $this->tmplvars_ymaxleft( sprintf('%1.2f', $maxent) );
+		  }
+		  else {
+			  $this->tmplvars_ymaxleft( $this->{maxscore});
+		  }
     }
     else {
         $this->message('debug', 'Not Frequency Mode.');
