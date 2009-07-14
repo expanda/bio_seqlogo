@@ -12,14 +12,15 @@ use File::Spec;
 use Data::Dumper;
 sub say ($) { print STDERR "SeqLogo.pm : $_[0]\n" if $DEBUG ; }
 
-sub new {
+# Methods.
+sub new {#{{{
     my $class = shift;
     my $args = {
-        color => 'Bio::SeqLogo::Color',
-        template => 'Bio::SeqLogo::Template',
-        parser => {
-            xml => 'Bio::SeqLogo::XML',
-            symvec => 'Bio::SeqLogo::Symvec'
+		color    => 'Bio::SeqLogo::Color',
+		template => 'Bio::SeqLogo::Template',
+		parser   => {
+			xml    => 'Bio::SeqLogo::XML',
+			symvec => 'Bio::SeqLogo::Symvec'
         },
         @_
     };
@@ -28,9 +29,8 @@ sub new {
 
     $DEBUG = 1 if $args->{debug};
     return $this;
-}
-
-sub createlogo {
+}#}}}
+sub createlogo {#{{{
     my $this = shift;
     my $opt = {
         "input"    => '',
@@ -124,9 +124,19 @@ sub createlogo {
     undef $color;
     undef $source;
     undef @outfnames;
-}
+}#}}}
+sub check_options {#{{{
+    my $this = shift;
 
-{
+    my $fpath = File::Spec->rel2abs( $this->opt("input") ); 
+    croak qq{ [fatal] : $fpath No such file or directory. } unless -e $fpath;
+
+    $this->opt("input", $fpath);
+
+    return 1;
+}#}}}
+# Closures.
+{ # file-number incl closure#{{{
     my $num = 1;
 
     sub _output_filename {
@@ -136,20 +146,8 @@ sub createlogo {
             return $1."_$num".$2;
         }
     }
-}
-
-sub check_options {
-    my $this = shift;
-
-    my $fpath = File::Spec->rel2abs( $this->opt("input") ); 
-    croak qq{ [fatal] : $fpath No such file or directory. } unless -e $fpath;
-
-    $this->opt("input", $fpath);
-
-    return 1;
-}
-
-{ 
+}#}}}
+{ # requiring cache closure.#{{{
     my $cache;
 
     sub activate {
@@ -168,10 +166,9 @@ sub check_options {
         }
     }
 
-}
-
- # Accessors.
-sub klass {
+}#}}}
+# Accessors.
+sub klass { #{{{
     my $this = shift;
 
     if ( scalar @_ == 2 ) {
@@ -190,9 +187,8 @@ sub klass {
             return  $this->{klass}->{$klass[0]}->{$klass[1]};
         }
     }
-}
-
-sub opt {
+}#}}}
+sub opt {#{{{
     my $this = shift;
 
     if ( scalar @_ == 2 ) {
@@ -205,7 +201,7 @@ sub opt {
     else {
         return $this->{_option};
     }
-}
+}#}}}
 
 1; # End of Bio::SeqLogo
 
@@ -224,6 +220,25 @@ Version 0.02
     use Bio::SeqLogo;
 
     my $generator = Bio::SeqLogo->new();
+
+    # From vesion 0.0.4, Bio::SeqLogo api has changed. 
+
+	# Configuration
+	
+	$generator->title('logo');
+	$generator->ylabelleft('bits');
+	$generator->graph('none');
+
+	# Insert values.
+
+	$generator->value('none');
+
+    # Output. 
+
+	$generator->output('foovar.ps');
+	$generator->stringify();
+
+    # You can also use old-fashoned api. 
 
     $generator->createlogo('logo.symvec',
                            template_value => {
