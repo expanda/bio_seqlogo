@@ -220,6 +220,7 @@ Version 0.02
     use Bio::SeqLogo;
 
     my $generator = Bio::SeqLogo->new();
+	my $value     = Bio::SeqLogo::Data->new();
 
     # From vesion 0.0.4, Bio::SeqLogo api has changed. 
 
@@ -231,9 +232,19 @@ Version 0.02
 
 	# Insert values.
 
-	$generator->value('none');
+	$value->add(0, 'none');
 
     # Output. 
+
+	$generator->createlogo( $value ,
+                           template_value => {
+                                'title'        => 'logo',
+                                'ylabelleft'   => 'bits'
+                           },
+                           graph => 'none',
+                           color => 'color_file.txt',
+                           output => 'logo.eps',
+                          );
 
 	$generator->output('foovar.ps');
 	$generator->stringify();
