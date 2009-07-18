@@ -10,6 +10,7 @@ use UNIVERSAL::require;
 use Carp;
 use File::Spec;
 use Data::Dumper;
+use Bio::SeqLogo::Template;
 sub say ($) { print STDERR "SeqLogo.pm : $_[0]\n" if $DEBUG ; }
 
 # Methods.
@@ -42,7 +43,6 @@ sub createlogo {#{{{
         "color"    => 'default',
         "graph"    => 'none' ,       #'line:dasshed:2px',
         "frequency" => 0 ,    
-        "debug"    => 0,
         "config"  => '',
         @_
     };
@@ -54,18 +54,21 @@ sub createlogo {#{{{
     # Parse
 
     my $source;
-
-    if ( $this->opt("input") =~ m/\.(\w+?)$/ ) {
+	if ( ref $this->opt('input') eq 'Bio::SeqLogo::DataSet') {
+		say "input data is structure";
+		$source = $this->opt('input');
+	}
+    elsif ( $this->opt("input") =~ m/\.(\w+?)$/ ) {
         $this->activate("parser.${1}");
         $source = $this->klass("parser.${1}")->new( file => $this->opt("input") );
-    }
+		say "Input : ".$this->opt("input");
+	}
     else {
         my $msg = qq{[Fatal] Input file loading failed! Supported file format are };
-        $msg .= ' $_ ,' for keys %{ $this->klass('parser') };
+        $msg .= " $_ , " for keys %{ $this->klass('parser') };
         say $msg;
     }
 
-    say "Input : ".$this->opt("input");
 
     # Load template
 
@@ -96,7 +99,6 @@ sub createlogo {#{{{
     my @outfnames;
 
     for my $doc (@{ $source->docset() }) {
-
         $logo_tmpl->process(
             source    => $doc, 
             maxsize   => $this->opt("maxsize"),
@@ -128,79 +130,80 @@ sub createlogo {#{{{
 sub check_options {#{{{
     my $this = shift;
 
-    my $fpath = File::Spec->rel2abs( $this->opt("input") ); 
-    croak qq{ [fatal] : $fpath No such file or directory. } unless -e $fpath;
+	unless (ref $this->opt("input") ) { 
+		my $fpath = File::Spec->rel2abs( $this->opt("input") ); 
+		croak qq{ [fatal] : $fpath No such file or directory. } unless -e $fpath;
+		$this->opt("input", $fpath);
+	}
 
-    $this->opt("input", $fpath);
-
-    return 1;
+	return 1;
 }#}}}
 # Closures.
 { # file-number incl closure#{{{
-    my $num = 1;
+	my $num = 1;
 
-    sub _output_filename {
-        my $name = shift;
-        $num++;
-        if ($name =~ /^(.+?)(\.[a-z]{1,3})$/) {
-            return $1."_$num".$2;
-        }
-    }
+	sub _output_filename {
+		my $name = shift;
+		$num++;
+		if ($name =~ /^(.+?)(\.[a-z]{1,3})$/) {
+			return $1."_$num".$2;
+		}
+	}
 }#}}}
 { # requiring cache closure.#{{{
-    my $cache;
+	my $cache;
 
-    sub activate {
-        my $this =shift;
-        my $arg = shift || croak "no arg.";
+	sub activate {
+		my $this =shift;
+		my $arg = shift || croak "no arg.";
 
-        return 1 if $cache->{$arg};
-        $cache->{$arg} = 1;
+		return 1 if $cache->{$arg};
+		$cache->{$arg} = 1;
 
-        if ($arg =~ /^[a-z]+$/i) {
-            $this->{klass}->{$arg}->require;
-        }
-        elsif ($arg =~ /\./) {
-            my @klass = split(/\./, $arg);
-            $this->{klass}->{$klass[0]}->{$klass[1]}->require;
-        }
-    }
+		if ($arg =~ /^[a-z]+$/i) {
+			$this->{klass}->{$arg}->require;
+		}
+		elsif ($arg =~ /\./) {
+			my @klass = split(/\./, $arg);
+			$this->{klass}->{$klass[0]}->{$klass[1]}->require;
+		}
+	}
 
 }#}}}
 # Accessors.
 sub klass { #{{{
-    my $this = shift;
+	my $this = shift;
 
-    if ( scalar @_ == 2 ) {
-        $this->{klass}->{$_[0]} = $_[1];
-        return $this->{klass}->{$_[0]};
-    }
-    elsif ( scalar @_ == 1 ) {
-        my $arg = shift;
+	if ( scalar @_ == 2 ) {
+		$this->{klass}->{$_[0]} = $_[1];
+		return $this->{klass}->{$_[0]};
+	}
+	elsif ( scalar @_ == 1 ) {
+		my $arg = shift;
 
-        if ($arg =~ /^[a-z]+$/i) {
-            return $this->{klass}->{$arg};
-        }
-        elsif ($arg =~ /\./) {
-            my @klass = split(/\./, $arg);
-            say qq{$klass[0] $klass[1]};
-            return  $this->{klass}->{$klass[0]}->{$klass[1]};
-        }
-    }
+		if ($arg =~ /^[a-z]+$/i) {
+			return $this->{klass}->{$arg};
+		}
+		elsif ($arg =~ /\./) {
+			my @klass = split(/\./, $arg);
+			say qq{$klass[0] $klass[1]};
+			return  $this->{klass}->{$klass[0]}->{$klass[1]};
+		}
+	}
 }#}}}
 sub opt {#{{{
-    my $this = shift;
+	my $this = shift;
 
-    if ( scalar @_ == 2 ) {
-        $this->{_option}->{$_[0]} = $_[1];
-        return $this->{_option}->{$_[0]};
-    }
-    elsif ( scalar @_ == 1 ) {
-        return $this->{_option}->{(shift)};
-    }
-    else {
-        return $this->{_option};
-    }
+	if ( scalar @_ == 2 ) {
+		$this->{_option}->{$_[0]} = $_[1];
+		return $this->{_option}->{$_[0]};
+	}
+	elsif ( scalar @_ == 1 ) {
+		return $this->{_option}->{(shift)};
+	}
+	else {
+		return $this->{_option};
+	}
 }#}}}
 
 1; # End of Bio::SeqLogo
@@ -217,15 +220,15 @@ Version 0.02
 
 =head1 SYNOPSIS
 
-    use Bio::SeqLogo;
+	use Bio::SeqLogo;
 
-    my $generator = Bio::SeqLogo->new();
+	my $generator = Bio::SeqLogo->new();
 	my $value     = Bio::SeqLogo::Data->new();
 
-    # From vesion 0.0.4, Bio::SeqLogo api has changed. 
+	# From vesion 0.0.4, Bio::SeqLogo api has changed. 
 
 	# Configuration
-	
+
 	$generator->title('logo');
 	$generator->ylabelleft('bits');
 	$generator->graph('none');
@@ -234,32 +237,32 @@ Version 0.02
 
 	$value->add(0, 'none');
 
-    # Output. 
+	# Output. 
 
 	$generator->createlogo( $value ,
-                           template_value => {
-                                'title'        => 'logo',
-                                'ylabelleft'   => 'bits'
-                           },
-                           graph => 'none',
-                           color => 'color_file.txt',
-                           output => 'logo.eps',
-                          );
+						   template_value => {
+								'title'        => 'logo',
+								'ylabelleft'   => 'bits'
+						   },
+						   graph => 'none',
+						   color => 'color_file.txt',
+						   output => 'logo.eps',
+						  );
 
 	$generator->output('foovar.ps');
 	$generator->stringify();
 
-    # You can also use old-fashoned api. 
+	# You can also use old-fashoned api. 
 
-    $generator->createlogo('logo.symvec',
-                           template_value => {
-                                'title'        => 'logo',
-                                'ylabelleft'   => 'bits'
-                           },
-                           graph => 'none',
-                           color => 'color_file.txt',
-                           output => 'logo.eps',
-                          );
+	$generator->createlogo('logo.symvec',
+						   template_value => {
+								'title'        => 'logo',
+								'ylabelleft'   => 'bits'
+						   },
+						   graph => 'none',
+						   color => 'color_file.txt',
+						   output => 'logo.eps',
+						  );
 
 =head1 DESCRIPTION
 
@@ -312,7 +315,7 @@ automatically be notified of progress on your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc Bio::SeqLogo
+	perldoc Bio::SeqLogo
 
 You can also look for information at:
 

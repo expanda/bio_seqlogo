@@ -7,6 +7,7 @@ use File::Spec;
 use Data::Dumper;
 use YAML;
 use Carp;
+use POSIX qw{ceil};
 
 use base qw{Exporter};
 our @EXPORT = qw(generate_template);
@@ -125,7 +126,7 @@ sub new {
             'yaxislabelright'   => 0,
             'ymax'         => 1,
             'ymaxright'    => 100,
-            'ymaxleft'    => 100,
+            'ymaxleft'     => 100,
             'ticbits'      => '',
             'ticbitsright' => '',
             'canvasstroke' => 'false',
@@ -210,7 +211,8 @@ sub process {
 	 $this->{maxscore} = $args->{maxscore};
 
     if ( defined($args->{source}) &&
-        ( ref ( my $c =  $args->{source} ) =~ m/Bio::SeqLogo::XML::Class|Bio::SeqLogo::Symvec::Accessor/ ) ) {
+        ( ref ( my $c =  $args->{source} ) =~
+		   	m/Bio::SeqLogo::XML::Class|Bio::SeqLogo::Symvec::Accessor|Bio::SeqLogo::DataSet::Class/ ) ) {
         # Bio::SeqLogo::XML
         $this->message('debug', 'process logoxml or symvec');
         return $this->process_logo(%{$args});
@@ -220,7 +222,7 @@ sub process {
     }
 }
 
-=item process_logoxml
+=item process_logo
 
  Pre-Processing template.
 
@@ -239,23 +241,22 @@ sub process_logo {
     my ( @at_coord , @bezier_heights );
     my $maxsize = 0;
 
+	for my $pos ( $class->iterate_position ) {
+		my $sum;
+		my @data;
+		$maxsize = ( $class->entropy($pos) > $maxsize )
+		? $class->entropy($pos) : $maxsize if defined( $class->entropy($pos) );
 
-    for my $pos ( $class->iterate_position ) {
-        my $sum;
-        my @data;
-        $maxsize = ( $class->entropy($pos) > $maxsize )
-        ? $class->entropy($pos) : $maxsize if defined( $class->entropy($pos) );
+		for my $symbol ( $class->symbols($pos) ) {
+			carp qq{Void number in $$symbol{type}} unless defined($symbol->{score});
+		$this->message( 'debug', qq{$$symbol{score} / $$args{source}{$pos}{entropy}} );
+	push @data, {
+		char => $symbol->{type},
+		num  => ($args->{source}->{$pos}->{entropy} == 0 ) ? 0
+		: $symbol->{score} / $args->{source}->{$pos}->{entropy},
+	};
 
-        for my $symbol ( $class->symbols($pos) ) {
-            carp qq{Void number in $$symbol{type}} unless defined($symbol->{score});
-        $this->message( 'debug', qq{$$symbol{score} / $$args{source}{$pos}{entropy}} );
-    push @data, {
-        char => $symbol->{type},
-        num  => ($args->{source}->{$pos}->{entropy} == 0 ) ? 0
-        : $symbol->{score} / $args->{source}->{$pos}->{entropy},
-    };
-
-    $sum += $symbol->{score};
+	$sum += $symbol->{score};
 }
 
 @data = sort { $b->{num} <=> $a->{num} } @data;
@@ -263,16 +264,17 @@ sub process_logo {
 push @at_coord , {
     coordinate => $pos,
     data       => \@data,
-    entoropy   => $sum,
+    entoropy   => $class->entropy($pos),
 };
 $sum = 0;
   }
 
   $this->tmplvars_atcoord(\@at_coord);
   $this->tmplvars_charsperline(scalar(@at_coord));
+  $this->message('info', $maxsize."is maxsize!!!!!!!!!");
 
   {
-      @_ = ($this, $maxsize);
+      @_ = ($this, $maxsize );
       goto &size_adjustment;
   }
 }
@@ -302,11 +304,13 @@ sub size_adjustment {
             $_->{num} *= ( $this->{display_max} ) for @{$d->{data}};
         }
 
-        my $dentoropy;
-        $dentoropy = $d->{entoropy} * $this->{display_max} / $maxsize;
+        my $dentoropy = $d->{entoropy} * $this->{display_max} / $maxsize;
+
         push  @{ $this->{_graph_heights_data} },
-        { entoropy =>  $dentoropy ,
-            bitsnum => scalar(@{$d->{data}}) };
+        {
+		   	entoropy =>  $dentoropy ,
+            bitsnum  => scalar(@{$d->{data}}) 
+		};
     }
 
     $this->message('info', "ymax is $maxent");
@@ -317,10 +321,10 @@ sub size_adjustment {
     unless ($this->{_frequency}) {
         $this->message('debug', 'Frequency Mode.');
 		  if ($this->{maxscore} eq 'auto') {
-			  $this->tmplvars_ymaxleft( sprintf('%1.2f', $maxent) );
+			  $this->tmplvars_ymaxleft( sprintf('%1.2f', $maxent ) );
 		  }
 		  else {
-			  $this->tmplvars_ymaxleft( $this->{maxscore});
+			  $this->tmplvars_ymaxleft($this->{maxscore});
 		  }
     }
     else {
